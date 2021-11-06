@@ -14,132 +14,97 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Copyright from "./Copyright";
 import useStyles from "./Style";
-import { withStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
+import backgroundImage from './background.jpg';
 
-class SignInPage extends React.Component {
+interface PropsTypes extends WithStyles<typeof useStyles>{
+  isSignedIn: any;
+}
+
+interface StateTypes {
+    firstnameValue: string;
+    lastnameValue: string;
+    emailFormValue: string;
+    passwordValue: string;
+}
+
+class SignInPage extends React.Component<PropsTypes> {
+
+      state = {
+            firstnameValue: "",
+            lastnameValue: "",
+            emailFormValue: "",
+            passwordValue: "",
+        };
     render(){
+        const signUpHandler: () => void = () => {
+            this.props.isSignedIn({isSignedIn: true})
+        }
+
         const { classes } = this.props;
         return(
-            <Grid container component="main" className={classes.root}>
-      <Grid container component="main" className={classes.root}>
-        <CssBaseline />
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          style={{
-            backgroundImage: `url(${HeaderImage})`,
-          }}
-          className={classes.image}
-        />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <div className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Log in
-            </Typography>
-            <form
-              className={classes.form}
-              onSubmit={(e: any): void => {
-                e.preventDefault();
-                const userInput: LogInInput = {
-                  login: emailFormValue,
-                  password: passwordFormValue,
-                };
-                logInHandler({
-                  variables: {
-                    input: userInput,
-                  },
-                })
-                  .then()
-                  .catch(err => console.error(err));
-              }}
-              noValidate
-            >
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                value={emailFormValue}
-                onChange={(e: any): void => setEmailFormValue(e.target.value)}
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                className={classes.textField}
-                InputLabelProps={{
-                  classes: {
-                    root: classes.cssLabel,
-                  },
-                }}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(e: any): void => setPaswordFormValue(e.target.value)}
-                value={passwordFormValue}
-              />
-              <FormControlLabel
-                control={<Checkbox value="remember" />}
-                label="Remember me"
-                className={classes.controlLabel}
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                className={classes.submitButton}
-                onClick={(e: any): void => {
-                  e.preventDefault();
-                  const userInput: LogInInput = {
-                    login: emailFormValue,
-                    password: passwordFormValue,
-                  };
-                  logInHandler({
-                    variables: {
-                      input: userInput,
-                    },
-                  })
-                    .then()
-                    .catch(err => console.error(err));
-                }}
-              >
-                Log In
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link className={classes.link} href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link className={classes.link} href="/signup" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-              <Box mt={5}>
-                <Copyright />
-              </Box>
-            </form>
-          </div>
+          <Grid container component="main" className={classes.root}>
+          <CssBaseline />
+          <Grid item xs={false} sm={4} md={7} className={classes.image} style={{backgroundImage: `url(${backgroundImage})`}} />
+          <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+            <div className={classes.paper}>
+              <Avatar className={classes.avatar}>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              <form className={classes.form} onSubmit={signUpHandler} noValidate>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  className={classes.textField}
+                  value={this.state.emailFormValue}
+                  onChange={(e) => this.setState({emailFormValue: e.target.value})}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={this.state.passwordValue}
+                  onChange={(e) => this.setState({passwordValue: e.target.value})}
+                />
+                <FormControlLabel
+                  control={<Checkbox value="remember"/>}
+                  label="Remember me"
+                  className={classes.controlLabel}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  className={classes.submitButton}
+                  onClick={signUpHandler}
+                >
+                  Sign in
+                </Button>
+                <Box mt={5}>
+                  <Copyright />
+                </Box>
+              </form>
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
-    </Grid>
         )
     }
 }
 
-export default withStyles(useStyles)(SignInPage);
+export default withStyles(useStyles, { withTheme: true })(SignInPage);

@@ -6,14 +6,17 @@ import SignUpPage from "./Pages/Auth/SignUpPage";
 import SignInPage from "./Pages/Auth/SignInPage";
 
 class AppRouter extends React.Component {
-    me = true;
+    state = {
+        isSignedIn: true,
+    }
     render(){
-        if(!this.me){
+        console.log(this.state)
+        if(!this.state.isSignedIn){
             return(
                 <>
                 <Routes>
                     <Route path='*' element={<Navigate to='/signin' />} />
-                    <Route path='/signin' element={<SignInPage />} />
+                    <Route path='/signin' element={<SignInPage isSignedIn={this.setState} />} />
                     <Route path='/signup' element={<SignUpPage />} />
                 </Routes>
                 </>
