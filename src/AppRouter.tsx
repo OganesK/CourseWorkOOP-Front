@@ -7,7 +7,7 @@ import SignInPage from "./Pages/Auth/SignInPage";
 
 class AppRouter extends React.Component {
     state = {
-        isSignedIn: true,
+        isSignedIn: false,
     }
     render(){
         console.log(this.state)

@@ -15,6 +15,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Copyright from "./Copyright";
 import useStyles from "./Style";
 import { createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
+import { BASE_API_URL } from '../../config';
 
 import backgroundImage from './background.jpg';
 
@@ -27,7 +28,7 @@ interface StateTypes {
     passwordValue: string;
 }
 
-class SignInPage extends React.Component<PropsTypes, StateTypes> {
+class SignUpPage extends React.Component<PropsTypes, StateTypes> {
 
     constructor(props: PropsTypes) {
         super(props);
@@ -39,9 +40,37 @@ class SignInPage extends React.Component<PropsTypes, StateTypes> {
             passwordValue: "",
         };
       }
+    
+    signUpMutation = `
+      mutation($data:signUpInput){
+        signUp(data:$data){
+          token
+        }
+      }
+    `
+
     render(){
-        const signUpHandler: () => void = () => {
-            alert('Signup')
+        const signUpHandler: () => void = async () => {
+            alert('asd');
+            const response = await fetch(BASE_API_URL, {
+              method: 'POST',
+              headers:{
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                query: this.signUpMutation,
+                variables: {
+                  data: {
+                    firstname: this.state.firstnameValue,
+                    lastname: this.state.lastnameValue,
+                    email: this.state.emailFormValue,
+                    password: this.state.passwordValue
+                  }
+                }
+              })
+            })
+            console.log(response)
+            // window.localStorage.setItem('token', response.formData.signUp.token)
         }
 
         const { classes } = this.props;
@@ -138,4 +167,4 @@ class SignInPage extends React.Component<PropsTypes, StateTypes> {
     }
 }
 
-export default withStyles(useStyles, { withTheme: true })(SignInPage);
+export default withStyles(useStyles, { withTheme: true })(SignUpPage);
