@@ -12,10 +12,11 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Copyright from "./Copyright";
-import useStyles from "./Style";
+
 import { createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
 import { BASE_API_URL } from '../../config';
+import Copyright from "./Copyright";
+import useStyles from "./Style";
 
 import backgroundImage from './background.jpg';
 
@@ -29,6 +30,7 @@ interface StateTypes {
 }
 
 class SignUpPage extends React.Component<PropsTypes, StateTypes> {
+
 
     constructor(props: PropsTypes) {
         super(props);
@@ -51,9 +53,9 @@ class SignUpPage extends React.Component<PropsTypes, StateTypes> {
 
     render(){
         const signUpHandler: () => void = async () => {
-            alert('asd');
             const response = await fetch(BASE_API_URL, {
               method: 'POST',
+              redirect: 'manual',
               headers:{
                 'Content-Type': 'application/json',
               },
@@ -69,8 +71,8 @@ class SignUpPage extends React.Component<PropsTypes, StateTypes> {
                 }
               })
             })
-            console.log(response)
-            // window.localStorage.setItem('token', response.formData.signUp.token)
+            const token = await response.json();
+            window.localStorage.setItem('token', token.data.signUp.token)
         }
 
         const { classes } = this.props;

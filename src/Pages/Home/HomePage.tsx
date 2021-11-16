@@ -19,6 +19,8 @@ import Button from '@mui/material/Button';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MoneyOffIcon from '@mui/icons-material/MoneyOff';
 
+import { Queries } from './graphql/Query';
+
 interface PropsTypes extends WithStyles<typeof useStyles>{
 
 }
@@ -37,6 +39,7 @@ class SignInPage extends React.Component<PropsTypes> {
             hovered:undefined,
             amount:0,
             operationType:'Income',
+            balance: 0,
         };
     render(){
         const lineWidth = 60;
@@ -45,6 +48,7 @@ class SignInPage extends React.Component<PropsTypes> {
             fontFamily: 'sans-serif',
           };
         const { classes } = this.props;
+        const data = Queries.getData(1).then(res => this.setState({balance: res.data.user.balance}))
         return(
           <Grid container component="main" className={classes.root}>
           <CssBaseline />
@@ -52,6 +56,7 @@ class SignInPage extends React.Component<PropsTypes> {
           <Grid item xs={12} sm={8} md={5} component={Paper} elevation={5} square>
             <div className={classes.paper}>
               <h1>Текущие расходы:</h1>
+              <h1>Баланс: {this.state.balance}</h1>
               <PieChart
               style={{
                 fontFamily:
@@ -92,14 +97,24 @@ class SignInPage extends React.Component<PropsTypes> {
               }}
                 />;
                 <FormControl fullWidth sx={{ m: 1 }}>
-          <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
+                  <Grid container direction='row'>
+          <div>
           <OutlinedInput
             id="outlined-adornment-amount"
             value={this.state.amount}
             onChange={(e) => this.setState({amount: e.target.value})}
             startAdornment={<InputAdornment position="start">$</InputAdornment>}
-            label="Amount"
           />
+          </div>
+          <div>
+          <OutlinedInput
+            id="direction"
+            // value={this.state.amount}
+            onChange={(e) => this.setState({amount: e.target.value})}
+            placeholder='Direction'
+          />
+          </div>
+          </Grid>
            <FormControl component="fieldset">
             <FormLabel component="legend">Operation type</FormLabel>
             <RadioGroup row aria-label="Operation type" value={this.state.operationType} name="row-radio-buttons-group" onChange={(e) => this.setState({operationType: e.target.value})}>
