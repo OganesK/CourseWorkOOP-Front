@@ -20,6 +20,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MoneyOffIcon from '@mui/icons-material/MoneyOff';
 
 import { Queries } from './graphql/Query';
+import { Mutations } from './graphql/Mutation';
 
 interface PropsTypes extends WithStyles<typeof useStyles>{
 
@@ -33,104 +34,123 @@ interface StateTypes {
 }
 
 class SignInPage extends React.Component<PropsTypes> {
+  state = {
+    selected:0,
+    hovered:undefined,
+    amount:0,
+    operationType:'INCOME',
+    balance: 0,
+    direction: ''
+};
+  //@ts-ignore
 
-      state = {
-            selected:0,
-            hovered:undefined,
-            amount:0,
-            operationType:'Income',
-            balance: 0,
+  componentDidMount(){
+    Queries.getData(1).then(res => this.setState({balance: res.data.user.balance}))
+  }
+
+  render(){
+      const lineWidth = 60;
+      const defaultLabelStyle = {
+          fontSize: '5px',
+          fontFamily: 'sans-serif',
         };
-    render(){
-        const lineWidth = 60;
-        const defaultLabelStyle = {
-            fontSize: '5px',
-            fontFamily: 'sans-serif',
-          };
-        const { classes } = this.props;
-        const data = Queries.getData(1).then(res => this.setState({balance: res.data.user.balance}))
-        return(
-          <Grid container component="main" className={classes.root}>
-          <CssBaseline />
-          <Grid item xs={false} sm={4} md={7} className={classes.image} style={{backgroundImage: `url(${backgroundImage})`}} />
-          <Grid item xs={12} sm={8} md={5} component={Paper} elevation={5} square>
-            <div className={classes.paper}>
-              <h1>Текущие расходы:</h1>
-              <h1>Баланс: {this.state.balance}</h1>
-              <PieChart
-              style={{
-                fontFamily:
-                  '"Nunito Sans", -apple-system, Helvetica, Arial, sans-serif',
-                fontSize: '3px',
-              }}
-              data={[
-                { title: 'Two', value: 50, color: '#C13C37', goal: 'Medicine' },
-                { title: 'Three', value: 50, color: '#6A2135', goal:'Shop' },
-                { title: 'Three', value: 50, color: '#6A2135', goal:'Shop' },
-            ]}
-              radius={PieChart.defaultProps.radius - 20}
-              lineWidth={60}
-              segmentsStyle={{ transition: 'stroke .3s', cursor: 'pointer' }}
-              segmentsShift={(index) => (index === this.state.selected ? 6 : 1)}
-              animate
-              label={({ dataEntry }) => Math.round(dataEntry.percentage) + '%\n' + dataEntry.goal}
-              labelPosition={100 - lineWidth / 2}
-              labelStyle={{
-                fill: '#fff',
-                opacity: 0.75,
-                pointerEvents: 'none',
-              }}
-              onClick={(_, index) => {
-                  this.setState({
-                      selected:index === this.state.selected ? undefined : index
-                  })
-              }}
-              onMouseOver={(_, index) => {
-                  this.setState({
-                      hovered: index
-                  })
-              }}
-              onMouseOut={() => {
-                  this.setState({
-                      hovered: undefined
-                  })
-              }}
-                />;
-                <FormControl fullWidth sx={{ m: 1 }}>
-                  <Grid container direction='row'>
-          <div>
-          <OutlinedInput
-            id="outlined-adornment-amount"
-            value={this.state.amount}
-            onChange={(e) => this.setState({amount: e.target.value})}
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-          />
-          </div>
-          <div>
-          <OutlinedInput
-            id="direction"
-            // value={this.state.amount}
-            onChange={(e) => this.setState({amount: e.target.value})}
-            placeholder='Direction'
-          />
-          </div>
-          </Grid>
-           <FormControl component="fieldset">
-            <FormLabel component="legend">Operation type</FormLabel>
-            <RadioGroup row aria-label="Operation type" value={this.state.operationType} name="row-radio-buttons-group" onChange={(e) => this.setState({operationType: e.target.value})}>
-                <FormControlLabel value="Income" control={<Radio />} label="Income" />
-                <FormControlLabel value="Consumption" control={<Radio />} label="Consumption" />
-            </RadioGroup>
-            <Button variant="outlined" startIcon={this.state.operationType === 'Income' ? <AttachMoneyIcon /> : <MoneyOffIcon/>}>
-                {this.state.operationType === 'Income' ? 'Deposit' : 'Spend'}
-            </Button>
-            </FormControl>
-        </FormControl>
-            </div>
-          </Grid>
-        </Grid>
+      const { classes } = this.props;
+
+      const newTransactionHandler = async () => {
+        const answer = await Mutations.createNewTransaction(
+          1,
+          this.state.amount,
+          String(this.state.direction),
+          String(this.state.operationType)
         )
-    }
+
+        if(answer){
+          console.log(answer)
+        }
+      }
+
+      return(
+        <Grid container component="main" className={classes.root}>
+        <CssBaseline />
+        <Grid item xs={false} sm={4} md={7} className={classes.image} style={{backgroundImage: `url(${backgroundImage})`}} />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={5} square>
+          <div className={classes.paper}>
+            <h1>Текущие расходы:</h1>
+            <h1>Баланс: {this.state.balance}</h1>
+            <PieChart
+            style={{
+              fontFamily:
+                '"Nunito Sans", -apple-system, Helvetica, Arial, sans-serif',
+              fontSize: '3px',
+            }}
+            data={[
+              { title: 'Two', value: 50, color: '#C13C37', goal: 'Medicine' },
+              { title: 'Three', value: 50, color: '#6A2135', goal:'Shop' },
+              { title: 'Three', value: 50, color: '#6A2135', goal:'Shop' },
+          ]}
+            radius={PieChart.defaultProps.radius - 20}
+            lineWidth={60}
+            segmentsStyle={{ transition: 'stroke .3s', cursor: 'pointer' }}
+            segmentsShift={(index) => (index === this.state.selected ? 6 : 1)}
+            animate
+            label={({ dataEntry }) => Math.round(dataEntry.percentage) + '%\n' + dataEntry.goal}
+            labelPosition={100 - lineWidth / 2}
+            labelStyle={{
+              fill: '#fff',
+              opacity: 0.75,
+              pointerEvents: 'none',
+            }}
+            onClick={(_, index) => {
+                this.setState({
+                    selected:index === this.state.selected ? undefined : index
+                })
+            }}
+            onMouseOver={(_, index) => {
+                this.setState({
+                    hovered: index
+                })
+            }}
+            onMouseOut={() => {
+                this.setState({
+                    hovered: undefined
+                })
+            }}
+              />;
+              <FormControl fullWidth sx={{ m: 1 }}>
+                <Grid container direction='row'>
+        <div>
+        <OutlinedInput
+          id="outlined-adornment-amount"
+          value={this.state.amount}
+          onChange={(e) => this.setState({amount: e.target.value})}
+          startAdornment={<InputAdornment position="start">$</InputAdornment>}
+        />
+        </div>
+        <div>
+        <OutlinedInput
+          id="direction"
+          value={this.state.direction}
+          onChange={(e) => this.setState({direction: e.target.value})}
+          placeholder='Direction'
+        />
+        </div>
+        </Grid>
+          <FormControl component="fieldset">
+          <FormLabel component="legend">Operation type</FormLabel>
+          <RadioGroup row aria-label="Operation type" value={this.state.operationType} name="row-radio-buttons-group" onChange={(e) => this.setState({operationType: e.target.value})}>
+              <FormControlLabel value="INCOME" control={<Radio />} label="Income" />
+              <FormControlLabel value="CONSUMPTION" control={<Radio />} label="Consumption" />
+          </RadioGroup>
+          <Button onClick={newTransactionHandler} variant="outlined" startIcon={this.state.operationType === 'Income' ? <AttachMoneyIcon /> : <MoneyOffIcon/>}>
+              {this.state.operationType === 'INCOME' ? 'Deposit' : 'Spend'}
+          </Button>
+          </FormControl>
+      </FormControl>
+          </div>
+        </Grid>
+      </Grid>
+      )
+  }
 }
 
 export default withStyles(useStyles, { withTheme: true })(SignInPage);
