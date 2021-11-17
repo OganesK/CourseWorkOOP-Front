@@ -40,13 +40,24 @@ class SignInPage extends React.Component<PropsTypes> {
     amount:0,
     operationType:'INCOME',
     balance: 0,
-    direction: ''
+    direction: '',
+    transactions: [],
 };
-  //@ts-ignore
 
   componentDidMount(){
-    Queries.getData(1).then(res => this.setState({balance: res.data.user.balance}))
+    Queries.getData(1).then(res => {
+      console.log(res)
+      this.setState({balance: res.data.user.balance,
+                    transactions: res.data.user.transactions})
+                  })
   }
+
+  groupBy = function(xs:any, key: any) {
+    return xs.reduce(function(rv: any, x: any) {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
+  };
 
   render(){
       const lineWidth = 60;
@@ -54,18 +65,33 @@ class SignInPage extends React.Component<PropsTypes> {
           fontSize: '5px',
           fontFamily: 'sans-serif',
         };
+
+      const expenceGroups = this.groupBy(this.state.transactions, 'transactionDirection')
+      const formatedGroups = Object.keys(expenceGroups).map((key, index) => (
+        {title:key, value: expenceGroups[key].reduce((acc:number, item: any)=> {
+          acc = acc + Number(item.amount)
+          return acc;
+        },0),
+        goal: key,
+        color:'#C13C37'
+      }
+      ))
+      console.log(expenceGroups)
+      console.log(formatedGroups)
       const { classes } = this.props;
 
       const newTransactionHandler = async () => {
         const answer = await Mutations.createNewTransaction(
           1,
-          this.state.amount,
-          String(this.state.direction),
-          String(this.state.operationType)
+          this.state.operationType === 'INCOME' ? this.state.amount : (-this.state.amount),
+          (this.state.direction.toString()),
+          (this.state.operationType.toString())
         )
 
-        if(answer){
-          console.log(answer)
+        if(answer.data.createTransaction === 'Success'){
+          alert("Транзакция успешно сохранена")
+        }else{
+          alert('Попробуйте еще раз, введенные данные некорректны.')
         }
       }
 
@@ -83,11 +109,8 @@ class SignInPage extends React.Component<PropsTypes> {
                 '"Nunito Sans", -apple-system, Helvetica, Arial, sans-serif',
               fontSize: '3px',
             }}
-            data={[
-              { title: 'Two', value: 50, color: '#C13C37', goal: 'Medicine' },
-              { title: 'Three', value: 50, color: '#6A2135', goal:'Shop' },
-              { title: 'Three', value: 50, color: '#6A2135', goal:'Shop' },
-          ]}
+            // { title: 'Two', value: 50, color: '#C13C37', goal: 'Medicine' },
+            data={formatedGroups}
             radius={PieChart.defaultProps.radius - 20}
             lineWidth={60}
             segmentsStyle={{ transition: 'stroke .3s', cursor: 'pointer' }}
@@ -141,7 +164,7 @@ class SignInPage extends React.Component<PropsTypes> {
               <FormControlLabel value="INCOME" control={<Radio />} label="Income" />
               <FormControlLabel value="CONSUMPTION" control={<Radio />} label="Consumption" />
           </RadioGroup>
-          <Button onClick={newTransactionHandler} variant="outlined" startIcon={this.state.operationType === 'Income' ? <AttachMoneyIcon /> : <MoneyOffIcon/>}>
+          <Button onClick={newTransactionHandler} variant="outlined" startIcon={this.state.operationType === 'INCOME' ? <AttachMoneyIcon /> : <MoneyOffIcon/>}>
               {this.state.operationType === 'INCOME' ? 'Deposit' : 'Spend'}
           </Button>
           </FormControl>
