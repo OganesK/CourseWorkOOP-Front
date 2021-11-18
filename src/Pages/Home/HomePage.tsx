@@ -96,7 +96,7 @@ class SignInPage extends React.Component<PropsTypes> {
           //@ts-ignore
           Number(this.userId),
           this.state.operationType === 'INCOME' ? this.state.amount : (-this.state.amount),
-          (this.state.direction.toString()),
+          this.state.direction.length === 0 ? "Default direction" : (this.state.direction.toString()),
           (this.state.operationType.toString())
         )
 
