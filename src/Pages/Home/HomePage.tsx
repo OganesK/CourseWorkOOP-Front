@@ -92,6 +92,10 @@ class SignInPage extends React.Component<PropsTypes> {
       const { classes } = this.props;
 
       const newTransactionHandler = async () => {
+        if( this.state.amount === 0 ){
+          alert('Сумма не введена');
+          return null;
+        }
         const answer = await Mutations.createNewTransaction(
           //@ts-ignore
           Number(this.userId),
