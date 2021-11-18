@@ -128,6 +128,11 @@ class SignInPage extends React.Component<PropsTypes> {
                 >
                   Sign in
                 </Button>
+                <Grid item>
+                  <Link className={classes.link} href="/signup" variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Grid>
                 <Box mt={5}>
                   <Copyright />
                 </Box>
