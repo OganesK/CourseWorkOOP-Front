@@ -78,6 +78,7 @@ class SignUpPage extends React.Component<PropsTypes, StateTypes> {
             const token = await response.json();
             window.localStorage.setItem('token', token.data.signUp.token)
             window.localStorage.setItem('id', token.data.signUp.user.id)
+            window.location.reload();
         }
 
         const { classes } = this.props;
