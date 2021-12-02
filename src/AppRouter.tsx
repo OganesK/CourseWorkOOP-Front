@@ -10,7 +10,6 @@ class AppRouter extends React.Component {
         isSignedIn: window.localStorage.getItem("id") ? true : false,
     }
     render(){
-        console.log(this.state)
         if(!this.state.isSignedIn){
             return(
                 <>

@@ -10,6 +10,7 @@ export class Queries {
                 }){
                 balance
                 transactions{
+                    id
                     type
                     amount
                     transactionDirection

@@ -68,7 +68,6 @@ class SignInPage extends React.Component<PropsTypes> {
             alert('Проверьте корректность введенных данных')
             return null
           }
-          console.log(res);
           window.localStorage.setItem('id', res.data.signin.user.id)
           window.location.reload();
       }
